@@ -33,7 +33,11 @@ public class WindowManager : MonoBehaviour
     private List<WindowPrefabEntry> windowPrefabs = new List<WindowPrefabEntry>();
 
     private readonly Dictionary<string, GameObject> prefabByWindowName = new Dictionary<string, GameObject>(StringComparer.Ordinal);
-    private readonly Dictionary<Type, MonoBehaviour> openedWindows = new Dictionary<Type, MonoBehaviour>();
+    private readonly Dictionary<Type, MonoBehaviour> openedType2WindowClsDict = new Dictionary<Type, MonoBehaviour>();
+
+    // Maintains opened windows in order: oldest -> newest.
+    private readonly Queue<MonoBehaviour> windowQueue = new Queue<MonoBehaviour>();
+    private MonoBehaviour topWindow;
 
     private void Awake()
     {
@@ -76,12 +80,55 @@ public class WindowManager : MonoBehaviour
         return manager.OpenWindowInternal(windowName, windowType);
     }
 
+    public static void CloseTopWindow()
+    {
+        WindowManager manager = instance != null ? instance : FindInstance();
+        if (manager == null)
+        {
+            Debug.LogError("WindowManager.CloseTopWindow failed: no WindowManager instance found in scene.");
+            return;
+        }
+
+        manager.CloseTopWindowInternal();
+    }
+
+    public static void CloseWindow(MonoBehaviour windowInstance)
+    {
+        if (windowInstance == null)
+        {
+            return;
+        }
+
+        WindowManager manager = instance != null ? instance : FindInstance();
+        if (manager == null)
+        {
+            Debug.LogError("WindowManager.CloseWindow failed: no WindowManager instance found in scene.");
+            return;
+        }
+
+        manager.CloseWindowInternal(windowInstance);
+    }
+
+    public static MonoBehaviour GetTopWindow()
+    {
+        WindowManager manager = instance != null ? instance : FindInstance();
+        if (manager == null)
+        {
+            return null;
+        }
+
+        manager.PruneClosedWindows();
+        return manager.topWindow;
+    }
+
     private MonoBehaviour OpenWindowInternal(string windowName, Type windowType)
     {
-        if (openedWindows.TryGetValue(windowType, out MonoBehaviour cachedWindow) && cachedWindow != null)
+        PruneClosedWindows();
+
+        if (openedType2WindowClsDict.TryGetValue(windowType, out MonoBehaviour cachedWindow) && cachedWindow != null)
         {
             cachedWindow.gameObject.SetActive(true);
-            cachedWindow.transform.SetAsLastSibling();
+            EnqueueWindow(cachedWindow);
             return cachedWindow;
         }
 
@@ -92,8 +139,7 @@ public class WindowManager : MonoBehaviour
             return null;
         }
 
-        Transform parent = FindWindowParent();
-        GameObject windowObject = parent != null ? Instantiate(prefab, parent, false) : Instantiate(prefab);
+        GameObject windowObject = Instantiate(prefab, transform, false);
         windowObject.name = prefab.name;
         windowObject.SetActive(true);
 
@@ -105,8 +151,34 @@ public class WindowManager : MonoBehaviour
             return null;
         }
 
-        openedWindows[windowType] = windowCls;
+        openedType2WindowClsDict[windowType] = windowCls;
+        EnqueueWindow(windowCls);
         return windowCls;
+    }
+
+    private void CloseTopWindowInternal()
+    {
+        PruneClosedWindows();
+        if (topWindow == null)
+        {
+            return;
+        }
+
+        CloseWindowInternal(topWindow);
+    }
+
+    private void CloseWindowInternal(MonoBehaviour windowInstance)
+    {
+        if (windowInstance == null)
+        {
+            return;
+        }
+
+        RemoveWindowFromQueue(windowInstance, refreshOrder: false);
+        windowInstance.gameObject.SetActive(false);
+
+        RefreshWindowSiblingOrder();
+        UpdateTopWindow();
     }
 
     private static WindowManager FindInstance()
@@ -121,10 +193,138 @@ public class WindowManager : MonoBehaviour
         return manager;
     }
 
-    private Transform FindWindowParent()
+    private void EnqueueWindow(MonoBehaviour window)
     {
-        UIRoot uiRoot = FindObjectOfType<UIRoot>();
-        return uiRoot != null ? uiRoot.transform : transform;
+        if (window == null)
+        {
+            return;
+        }
+
+        RemoveWindowFromQueue(window, refreshOrder: false);
+        windowQueue.Enqueue(window);
+
+        RefreshWindowSiblingOrder();
+        UpdateTopWindow();
+    }
+
+    private void RemoveWindowFromQueue(MonoBehaviour window, bool refreshOrder)
+    {
+        if (window == null)
+        {
+            return;
+        }
+
+        bool removed = RebuildQueueWithout(window);
+        if (!removed)
+        {
+            return;
+        }
+
+        if (refreshOrder)
+        {
+            RefreshWindowSiblingOrder();
+            UpdateTopWindow();
+        }
+    }
+
+    private bool RebuildQueueWithout(MonoBehaviour targetWindow)
+    {
+        bool removed = false;
+        Queue<MonoBehaviour> rebuiltQueue = new Queue<MonoBehaviour>(windowQueue.Count);
+
+        while (windowQueue.Count > 0)
+        {
+            MonoBehaviour window = windowQueue.Dequeue();
+            if (!removed && window == targetWindow)
+            {
+                removed = true;
+                continue;
+            }
+
+            rebuiltQueue.Enqueue(window);
+        }
+
+        while (rebuiltQueue.Count > 0)
+        {
+            windowQueue.Enqueue(rebuiltQueue.Dequeue());
+        }
+
+        return removed;
+    }
+
+    private void PruneClosedWindows()
+    {
+        List<Type> invalidTypes = null;
+        foreach (KeyValuePair<Type, MonoBehaviour> pair in openedType2WindowClsDict)
+        {
+            if (pair.Value != null)
+            {
+                continue;
+            }
+
+            if (invalidTypes == null)
+            {
+                invalidTypes = new List<Type>();
+            }
+
+            invalidTypes.Add(pair.Key);
+        }
+
+        if (invalidTypes != null)
+        {
+            for (int i = 0; i < invalidTypes.Count; i++)
+            {
+                openedType2WindowClsDict.Remove(invalidTypes[i]);
+            }
+        }
+
+        bool queueChanged = false;
+        Queue<MonoBehaviour> rebuiltQueue = new Queue<MonoBehaviour>(windowQueue.Count);
+        while (windowQueue.Count > 0)
+        {
+            MonoBehaviour window = windowQueue.Dequeue();
+            if (window != null && window.gameObject.activeSelf)
+            {
+                rebuiltQueue.Enqueue(window);
+                continue;
+            }
+
+            queueChanged = true;
+        }
+
+        while (rebuiltQueue.Count > 0)
+        {
+            windowQueue.Enqueue(rebuiltQueue.Dequeue());
+        }
+
+        if (queueChanged)
+        {
+            RefreshWindowSiblingOrder();
+        }
+
+        UpdateTopWindow();
+    }
+
+    private void RefreshWindowSiblingOrder()
+    {
+        foreach (MonoBehaviour window in windowQueue)
+        {
+            if (window == null)
+            {
+                continue;
+            }
+
+            window.transform.SetAsLastSibling();
+        }
+    }
+
+    private void UpdateTopWindow()
+    {
+        topWindow = null;
+        foreach (MonoBehaviour window in windowQueue)
+        {
+            topWindow = window;
+        }
     }
 
     private void RebuildPrefabLookup()
