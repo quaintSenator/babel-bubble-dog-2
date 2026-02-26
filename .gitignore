@@ -1,0 +1,20 @@
+# Ignore everything by default
+*
+
+# Keep this file
+!.gitignore
+
+# Keep required Unity project folders
+!Assets/
+!Assets/**
+!Packages/
+!Packages/**
+!ProjectSettings/
+!ProjectSettings/**
+
+# Ignore NGUI example/demo resources (scenes, textures, animations, etc.)
+Assets/NGUI/Examples/
+Assets/NGUI/Examples.meta
+
+# Ignore json files
+*.json
