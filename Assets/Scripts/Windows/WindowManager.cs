@@ -39,6 +39,16 @@ public class WindowManager : MonoBehaviour
     private readonly Queue<MonoBehaviour> windowQueue = new Queue<MonoBehaviour>();
     private MonoBehaviour topWindow;
 
+    private void OnEnable()
+    {
+        Player.PlayerHitReactableObject += HandleHitReactableObject;
+    }
+
+    private void OnDisable()
+    {
+        Player.PlayerHitReactableObject -= HandleHitReactableObject;
+    }
+
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -49,6 +59,11 @@ public class WindowManager : MonoBehaviour
 
         instance = this;
         RebuildPrefabLookup();
+    }
+
+    private void HandleHitReactableObject(GameObject hitObject)
+    {
+        Debug.Log("WindowManager received hit object: " + hitObject.name);
     }
 
     private void OnValidate()
