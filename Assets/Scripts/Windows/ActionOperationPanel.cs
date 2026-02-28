@@ -3,14 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class ActionOperationPanel : MonoBehaviour
 {
+
     public GameObject leafCopy;
     public List<GameObject> leaves = new List<GameObject>();
+    private const int MAX_LEAF_COUNT = 6;
+    private int visibleLeavesCount = 0;
     private void Awake()
     {
         leaves.Clear();
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < MAX_LEAF_COUNT; i++)
         {
             GameObject leafInstance = Instantiate(leafCopy, transform);
             leafInstance.name = "Leaf " + i;
@@ -22,10 +26,23 @@ public class ActionOperationPanel : MonoBehaviour
 
     private void OnEnable()
     {
-        foreach (var leaf in leaves)
+        var unlockedTypes = Models.behave.GetAllUnlockedBehaveTypes();
+        for(var i = 0; i < leaves.Count; i++)
         {
-            leaf.SetActive(false);
+            var leafGo = leaves[i];
+            leafGo.SetActive(false);
+            var leaf = leafGo.GetComponent<ActionPanelLeaf>();
+            if (leaf != null && i < unlockedTypes.Count)
+            {
+                leaf.SetBehaviourIconByType(unlockedTypes[i]);
+            }
         }
+
+        for (var i = unlockedTypes.Count; i <= leaves.Count; i++)
+        {
+            
+        }
+        visibleLeavesCount = unlockedTypes.Count;
         PlayExpandingAnim();
     }
     
@@ -43,7 +60,7 @@ public class ActionOperationPanel : MonoBehaviour
 
     IEnumerator PlayExpandingAnimCoroutine()
     {
-        for (int i = 0; i < leaves.Count; i++)
+        for (int i = 0; i < visibleLeavesCount; i++)
         {
             GameObject leaf = leaves[i];
             if (leaf != null)
@@ -54,7 +71,7 @@ public class ActionOperationPanel : MonoBehaviour
                 {
                     ActionPanelLeaf actionPanelLeaf = leaf.GetComponent<ActionPanelLeaf>();
                     leafAnimation.Play();
-                    actionPanelLeaf.ActiveButtonScale(false);
+                    actionPanelLeaf.SetButtonScaleActive(false);
                 }
             }
             yield return new WaitForSeconds(0.08f);

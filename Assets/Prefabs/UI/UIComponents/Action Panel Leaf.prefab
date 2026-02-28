@@ -241,6 +241,7 @@ GameObject:
   - component: {fileID: 1048530989134678467}
   - component: {fileID: 5753610520786187535}
   - component: {fileID: 3796940917619325553}
+  - component: {fileID: 4965719978313399399}
   m_Layer: 5
   m_Name: Action Panel Leaf
   m_TagString: Untagged
@@ -389,7 +390,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e70762085ec68894caff1fdd5a520465, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ButtonScale: {fileID: 0}
+  m_ButtonScale: {fileID: 3796940917619325553}
+  m_actionIcon: {fileID: 0}
 --- !u!114 &3796940917619325553
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -406,6 +408,19 @@ MonoBehaviour:
   hover: {x: 1.1, y: 1.1, z: 1.1}
   pressed: {x: 1.05, y: 1.05, z: 1.05}
   duration: 0.2
+--- !u!114 &4965719978313399399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7436626171231162928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1bd99dcf43f97d48bb6215c70f0cd40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  needsActiveCollider: 1
 --- !u!1 &8308979853308847727
 GameObject:
   m_ObjectHideFlags: 0
