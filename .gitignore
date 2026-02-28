@@ -15,6 +15,3 @@
 # Ignore NGUI example/demo resources (scenes, textures, animations, etc.)
 Assets/NGUI/Examples/
 Assets/NGUI/Examples.meta
-
-# Ignore json files
-*.json
