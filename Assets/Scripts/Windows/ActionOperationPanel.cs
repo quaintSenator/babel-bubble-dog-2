@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class ActionOperationPanel : MonoBehaviour
+public class ActionOperationPanel : BaseWindow
 {
-
     public GameObject leafCopy;
     public List<GameObject> leaves = new List<GameObject>();
     private const int MAX_LEAF_COUNT = 6;
     private int visibleLeavesCount = 0;
+    
     private void Awake()
     {
         leaves.Clear();
@@ -37,14 +37,23 @@ public class ActionOperationPanel : MonoBehaviour
                 leaf.SetBehaviourIconByType(unlockedTypes[i]);
             }
         }
-
-        for (var i = unlockedTypes.Count; i <= leaves.Count; i++)
-        {
-            
-        }
         visibleLeavesCount = unlockedTypes.Count;
         PlayExpandingAnim();
     }
+    
+    public override void Open(GameObject wakerObject = null)
+    {
+        var area = wakerObject.GetComponent<ReactableArea>();
+        if (area != null)
+        {
+            var reactPoint = area.reactShowingPoint;
+            if (reactPoint != null)
+            {
+                transform.position = reactPoint.transform.position;
+            }
+        }
+    }
+
     
     void AdjustAngle(GameObject leafInstance, int i)
     {

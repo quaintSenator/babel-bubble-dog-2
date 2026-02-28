@@ -6,6 +6,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public static event Action<GameObject> PlayerHitReactableObject;
+    public static event Action PlayerLeaveReactableObject;
     [SerializeField] private float speed = 5f;
 
     // Start is called before the first frame update
@@ -48,7 +49,7 @@ public class Player : MonoBehaviour
         var enteringArea = other.gameObject.GetComponent<ReactableArea>();
         if (enteringArea != null)
         {
-            PlayerHitReactableObject?.Invoke(enteringArea.gameObject);
+            PlayerLeaveReactableObject?.Invoke();
         }
     }
 }

@@ -18,13 +18,13 @@ public class WindowManager : MonoBehaviour
     {
         // Hardcoded windowName <-> windowClass mapping.
         { "TestWindow", typeof(TestWindow) },
-        { "Test Window", typeof(TestWindow) },
+        { "ActionPanel", typeof(ActionOperationPanel) },
     };
 
     private static readonly Dictionary<string, string> PrefabPathByWindowName = new Dictionary<string, string>(StringComparer.Ordinal)
     {
         { "TestWindow", "Assets/Prefabs/UI/Windows/Test Window.prefab" },
-        { "Test Window", "Assets/Prefabs/UI/Windows/Test Window.prefab" },
+        { "ActionPanel", "Assets/Prefabs/UI/Windows/Action Panel.prefab" },
     };
 
     private static WindowManager instance;
@@ -36,17 +36,19 @@ public class WindowManager : MonoBehaviour
     private readonly Dictionary<Type, MonoBehaviour> openedType2WindowClsDict = new Dictionary<Type, MonoBehaviour>();
 
     // Maintains opened windows in order: oldest -> newest.
-    private readonly Queue<MonoBehaviour> windowQueue = new Queue<MonoBehaviour>();
+    private static readonly Queue<MonoBehaviour> windowQueue = new Queue<MonoBehaviour>();
     private MonoBehaviour topWindow;
 
     private void OnEnable()
     {
         Player.PlayerHitReactableObject += HandleHitReactableObject;
+        Player.PlayerLeaveReactableObject += HandleLeaveReactableObject;
     }
 
     private void OnDisable()
     {
         Player.PlayerHitReactableObject -= HandleHitReactableObject;
+        Player.PlayerLeaveReactableObject -= HandleLeaveReactableObject;
     }
 
     private void Awake()
@@ -64,6 +66,12 @@ public class WindowManager : MonoBehaviour
     private void HandleHitReactableObject(GameObject hitObject)
     {
         Debug.Log("WindowManager received hit object: " + hitObject.name);
+        OpenWindow("ActionPanel", hitObject);
+    }
+
+    private void HandleLeaveReactableObject()
+    {
+        CloseWindow("ActionPanel");
     }
 
     private void OnValidate()
@@ -71,7 +79,7 @@ public class WindowManager : MonoBehaviour
         RebuildPrefabLookup();
     }
 
-    public static MonoBehaviour OpenWindow(string windowName)
+    public static MonoBehaviour OpenWindow(string windowName, GameObject wakerObject = null)
     {
         if (string.IsNullOrWhiteSpace(windowName))
         {
@@ -92,7 +100,7 @@ public class WindowManager : MonoBehaviour
             return null;
         }
 
-        return manager.OpenWindowInternal(windowName, windowType);
+        return manager.OpenWindowInternal(windowName, windowType, wakerObject);
     }
 
     public static void CloseTopWindow()
@@ -107,6 +115,24 @@ public class WindowManager : MonoBehaviour
         manager.CloseTopWindowInternal();
     }
 
+    public static void CloseWindow(string windowName)
+    {
+        BaseWindow window2Delete = null;
+        foreach (var window in windowQueue)
+        {
+            var w = (BaseWindow)window;
+            if (w.GetWindowName() == windowName)
+            {
+                window2Delete = w;
+            }
+            break;
+        }
+        if (window2Delete != null)
+        {
+            CloseWindow(window2Delete);
+        }
+    }
+    
     public static void CloseWindow(MonoBehaviour windowInstance)
     {
         if (windowInstance == null)
@@ -136,7 +162,7 @@ public class WindowManager : MonoBehaviour
         return manager.topWindow;
     }
 
-    private MonoBehaviour OpenWindowInternal(string windowName, Type windowType)
+    private MonoBehaviour OpenWindowInternal(string windowName, Type windowType, GameObject wakerObject)
     {
         PruneClosedWindows();
 
@@ -158,14 +184,15 @@ public class WindowManager : MonoBehaviour
         windowObject.name = prefab.name;
         windowObject.SetActive(true);
 
-        MonoBehaviour windowCls = windowObject.GetComponent(windowType) as MonoBehaviour;
+        BaseWindow windowCls = windowObject.GetComponent(windowType) as BaseWindow;
         if (windowCls == null)
         {
             Debug.LogError("WindowManager.OpenWindow failed: prefab '" + prefab.name + "' does not contain component " + windowType.Name);
             Destroy(windowObject);
             return null;
         }
-
+        windowCls.ConfigWindowName(windowName);
+        windowCls.Open(wakerObject);
         openedType2WindowClsDict[windowType] = windowCls;
         EnqueueWindow(windowCls);
         return windowCls;
@@ -178,7 +205,6 @@ public class WindowManager : MonoBehaviour
         {
             return;
         }
-
         CloseWindowInternal(topWindow);
     }
 
