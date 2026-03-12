@@ -18,15 +18,21 @@ public class Player : MonoBehaviour
     Animator animator;
     Animation rotateAnim;
     [SerializeField] private float speed = 5f;
+    [SerializeField] private float jumpMaxHeight = 2f;
     InputHoldingState holdingState;
     InputHoldingState curHoldingState;
     [SerializeField]  public SpriteRenderer rootSprite;
     bool moving = false;
+    private bool holdingJump = false;
+    [SerializeField] public bool isAtGround = true;
+    private float verticalVelocity = 0f;
+    private const float JumpGravity = 20f;
+    private bool isGrounded = false;
 
     public Transform RootBone;
     private const int LeftIdelDogEndRotateY = 0;
     private const int RightIdelDogEndRotateY = 180;
-
+    Collider2D myCollider;
     private int curXMovement;
     // Start is called before the first frame update
     void Start()
@@ -34,6 +40,7 @@ public class Player : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         holdingState = InputHoldingState.Idle;
         rotateAnim = GetComponent<Animation>();
+        myCollider = GetComponent<Collider2D>();
     }
 
     // Update is called once per frame
@@ -41,7 +48,8 @@ public class Player : MonoBehaviour
     {
         TickPlayerInput();
         TickAnimStateMove();
-        TickPosition();
+        TickPositionX();
+        TickPositionY();
         //TickAnimStateRotate(); 搁置 翻转没找到很好的办法 bug解决不了
         holdingState = curHoldingState;
     }
@@ -67,7 +75,15 @@ public class Player : MonoBehaviour
         {
             curHoldingState = InputHoldingState.Idle;
         }
-        
+
+        if (Input.GetKey(KeyCode.Space))
+        {
+            holdingJump = true;
+        }
+        else
+        {
+            holdingJump = false;  
+        }
     }
 
     private void TickAnimStateMove()
@@ -85,7 +101,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void TickPosition()
+    private void TickPositionX()
     {
         if (moving)
         {
@@ -112,6 +128,35 @@ public class Player : MonoBehaviour
             {
                 transform.localRotation = Quaternion.Euler(0, 180, 0);
             }
+        }
+    }
+
+    void TickPositionY()
+    {
+        var msk = LayerMask.GetMask("Ground");
+
+        Vector2 center = myCollider.bounds.center;
+        Vector2 size = myCollider.bounds.size;
+        float angle = transform.eulerAngles.z;
+
+        Collider2D hit = Physics2D.OverlapBox(center, size, angle, msk);
+        isAtGround = hit != null && hit != myCollider;
+        
+        
+        if (holdingJump && isAtGround)
+        {
+            verticalVelocity = Mathf.Sqrt(2f * JumpGravity * Mathf.Max(0f, jumpMaxHeight));
+            isAtGround = false;
+        }
+
+        if (!isAtGround || verticalVelocity > 0f)
+        {
+            verticalVelocity -= JumpGravity * Time.deltaTime;
+            transform.position += Vector3.up * (verticalVelocity * Time.deltaTime);
+        }
+        else
+        {
+            verticalVelocity = 0f;
         }
     }
 
@@ -166,15 +211,30 @@ public class Player : MonoBehaviour
         moving = false;
     }
 
+    #region 碰撞处理
+
     private void OnTriggerEnter(Collider other)
     {
         var enteringArea = other.gameObject.GetComponent<ReactableArea>();
-        if (enteringArea != null)
+        if (enteringArea != null) //如果是可交互对象
         {
             PlayerHitReactableObject?.Invoke(enteringArea.gameObject);
         }
     }
 
+    /*private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Ground")) {
+            isAtGround = true;
+        }
+    }
+    private void OnCollisionExit(Collision other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            isAtGround = false;
+        }
+    }*/
     private void OnTriggerExit(Collider other)
     {
         var enteringArea = other.gameObject.GetComponent<ReactableArea>();
@@ -183,6 +243,12 @@ public class Player : MonoBehaviour
             PlayerLeaveReactableObject?.Invoke();
         }
     }
+    
+  
+
+    #endregion
+
+
     
     
 }

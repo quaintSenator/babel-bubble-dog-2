@@ -9,7 +9,7 @@ public class KeyDownTest : MonoBehaviour
 
     private void Update()
     {
-        if (IsSpacePressedThisFrame())
+        if (IsEnterPressedThisFrame())
         {
             //WindowManager.OpenWindow("TestWindow");
         }
@@ -28,7 +28,7 @@ public class KeyDownTest : MonoBehaviour
     }
     
 
-    private static bool IsSpacePressedThisFrame()
+    private static bool IsEnterPressedThisFrame()
     {
 #if ENABLE_INPUT_SYSTEM
         Keyboard keyboard = Keyboard.current;
@@ -39,7 +39,7 @@ public class KeyDownTest : MonoBehaviour
 #endif
 
 #if ENABLE_LEGACY_INPUT_MANAGER
-        return Input.GetKeyDown(KeyCode.Space);
+        return Input.GetKeyDown(KeyCode.KeypadEnter);
 #else
         return false;
 #endif

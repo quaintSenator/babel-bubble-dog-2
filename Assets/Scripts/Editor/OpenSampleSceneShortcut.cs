@@ -5,7 +5,6 @@ using UnityEditor.SceneManagement;
 public static class OpenSampleSceneShortcut
 {
     private const string NGUIScenePath = "Assets/Scenes/NGUIScene.unity";
-    private const string CityScenePath = "Assets/Scenes/CityScene.unity";
 
     [MenuItem("Tools/Open NGUI Scene %#e")]
     private static void OpenNGUIScene()
@@ -14,12 +13,12 @@ public static class OpenSampleSceneShortcut
     }
 
     [MenuItem("Tools/Open City Scene %#q")]
-    private static void OpenCityScene()
+    private static void OpenNGUISceneAndPlay()
     {
-        OpenSceneWithPrompt(CityScenePath);
+        OpenSceneWithPrompt(NGUIScenePath, playAfterOpen: true);
     }
 
-    private static void OpenSceneWithPrompt(string scenePath)
+    private static void OpenSceneWithPrompt(string scenePath, bool playAfterOpen = false)
     {
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
         {
@@ -36,5 +35,10 @@ public static class OpenSampleSceneShortcut
         }
 
         EditorSceneManager.OpenScene(scenePath);
+
+        if (playAfterOpen)
+        {
+            EditorApplication.isPlaying = true;
+        }
     }
 }
