@@ -11,8 +11,7 @@ public class KeyDownTest : MonoBehaviour
     {
         if (IsSpacePressedThisFrame())
         {
-            //Debug.Log(message);
-            WindowManager.OpenWindow("TestWindow");
+            //WindowManager.OpenWindow("TestWindow");
         }
         else
         {

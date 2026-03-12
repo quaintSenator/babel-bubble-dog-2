@@ -681,6 +681,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
+  rootSprite: {fileID: 0}
   RootBone: {fileID: 1336783023}
 --- !u!65 &1618985909
 BoxCollider:
@@ -794,6 +795,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -928092295203186669, guid: ba6c726f8eda1f048a102f9fbd60c463, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5722105509324609139, guid: ba6c726f8eda1f048a102f9fbd60c463, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -805,6 +810,14 @@ PrefabInstance:
     - target: {fileID: 5722105509324609139, guid: ba6c726f8eda1f048a102f9fbd60c463, type: 3}
       propertyPath: m_LocalScale.z
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6766485126959075108, guid: ba6c726f8eda1f048a102f9fbd60c463, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6766485126959075108, guid: ba6c726f8eda1f048a102f9fbd60c463, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
