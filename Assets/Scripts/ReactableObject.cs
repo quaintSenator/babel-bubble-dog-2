@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ReactableArea : MonoBehaviour
+public class ReactableObject : MonoBehaviour
 {
     BoxCollider boxCollider;
     [SerializeField] public GameObject reactShowingPoint;
@@ -13,10 +13,11 @@ public class ReactableArea : MonoBehaviour
     void ReactAreaPrefix()
     {
         boxCollider = GetComponent<BoxCollider>();
-        var oriSize = boxCollider.size;
+        
+        /*var oriSize = boxCollider.size;
         var oriCenter = boxCollider.center;
         boxCollider.size.Set(oriSize.x, 99999, oriSize.z);
-        boxCollider.center.Set(oriCenter.x, 0, oriCenter.z);
+        boxCollider.center.Set(oriCenter.x, 0, oriCenter.z);*/ //纵向延展代码注掉了
         boxCollider.isTrigger = true;
     }
     
@@ -36,7 +37,7 @@ public class ReactableArea : MonoBehaviour
      * 首先在制作关卡时，手动确保静态的物体的可交互范围彼此不重叠。但这样一来柴火从小狗口中脱落的时候会自动掉到一个稍微有点远的地方（会制作一个程序动画，看起来就像掉到一个特定位置），
      * 这样做的弊端在于如果有的交互区域特别大，这样做会看起来很奇怪。
      *
-     * 为此拆分ReactableArea和ReactableObject. 
+     * 为此拆分ReactableObject和ReactableObject. 
      * Area仅仅用于提示可以显示交互面板了，而实际交互的对象是ReactableObject。
      * 这样一来，点击行动按钮时，还需要增加一段获取行动对象的逻辑。这个逻辑应当写在每个动作里，跳跃就完全不需要对象。
      * 
@@ -46,5 +47,10 @@ public class ReactableArea : MonoBehaviour
     {
         ReactAreaPrefix();
         reactShowingPoint.SetActive(false);
+    }
+
+    public virtual void SetOutline(bool isOutline)
+    {
+       
     }
 }

@@ -215,7 +215,7 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        var enteringArea = other.gameObject.GetComponent<ReactableArea>();
+        var enteringArea = other.gameObject.GetComponent<ReactableObject>();
         if (enteringArea != null) //如果是可交互对象
         {
             PlayerHitReactableObject?.Invoke(enteringArea.gameObject);
@@ -237,7 +237,7 @@ public class Player : MonoBehaviour
     }*/
     private void OnTriggerExit(Collider other)
     {
-        var enteringArea = other.gameObject.GetComponent<ReactableArea>();
+        var enteringArea = other.gameObject.GetComponent<ReactableObject>();
         if (enteringArea != null)
         {
             PlayerLeaveReactableObject?.Invoke();

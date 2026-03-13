@@ -43,7 +43,7 @@ public class ActionOperationPanel : BaseWindow
     
     public override void Open(GameObject wakerObject = null)
     {
-        var area = wakerObject.GetComponent<ReactableArea>();
+        var area = wakerObject.GetComponent<ReactableObject>();
         if (area != null)
         {
             var reactPoint = area.reactShowingPoint;
