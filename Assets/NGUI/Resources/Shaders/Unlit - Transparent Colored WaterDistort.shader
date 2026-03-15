@@ -8,7 +8,7 @@ Shader "Unlit/Transparent Colored WaterDistort"
 		_DistortScale ("Distort Scale", Range(1, 50)) = 12
 		_DistortSpeed ("Distort Speed", Range(0, 10)) = 1.5
 		_DistortDirection ("Distort Direction (UV)", Vector) = (1, 0, 0, 0)
-		isOutLine ("Is Outline", Range(0, 1)) = 0
+		_isOutLine ("Is Outline", Range(0, 1)) = 0
 		_OutlineColor ("Outline Color", Color) = (0, 0, 0, 1)
 		_OutlineWidth ("Outline Width (px)", Range(0, 100)) = 1
 	}
@@ -49,7 +49,7 @@ Shader "Unlit/Transparent Colored WaterDistort"
 			fixed _DistortSpeed;
 			float4 _DistortDirection;
 
-			fixed isOutLine;
+			fixed _isOutLine;
 			fixed4 _OutlineColor;
 			fixed _OutlineWidth;
 
@@ -99,7 +99,7 @@ Shader "Unlit/Transparent Colored WaterDistort"
 
 			fixed4 frag (v2f IN) : SV_Target
 			{
-				if (isOutLine < 0.5)
+				if (_isOutLine < 0.5)
 				{
 					return fixed4(0, 0, 0, 0);
 				}

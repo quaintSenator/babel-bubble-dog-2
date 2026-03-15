@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-public class WindowManager : MonoBehaviour
+public class WindowManager : BaseManager
 {
     [Serializable]
     private struct WindowPrefabEntry
@@ -19,12 +19,14 @@ public class WindowManager : MonoBehaviour
         // Hardcoded windowName <-> windowClass mapping.
         { "TestWindow", typeof(TestWindow) },
         { "ActionPanel", typeof(ActionOperationPanel) },
+        { "GuideWindow", typeof(GuideWindow) },
     };
 
     private static readonly Dictionary<string, string> PrefabPathByWindowName = new Dictionary<string, string>(StringComparer.Ordinal)
     {
         { "TestWindow", "Assets/Prefabs/UI/Windows/Test Window.prefab" },
         { "ActionPanel", "Assets/Prefabs/UI/Windows/Action Panel.prefab" },
+        { "GuideWindow", "Assets/Prefabs/UI/Windows/Guide Window.prefab" },
     };
 
     private static WindowManager instance;
@@ -38,35 +40,39 @@ public class WindowManager : MonoBehaviour
     // Maintains opened windows in order: oldest -> newest.
     private static readonly Queue<MonoBehaviour> windowQueue = new Queue<MonoBehaviour>();
     private MonoBehaviour topWindow;
-
+    
     private void OnEnable()
     {
-        Player.PlayerHitReactableObject += HandleHitReactableObject;
-        Player.PlayerLeaveReactableObject += HandleLeaveReactableObject;
+        EventManager.Register<GameObject>(EventManager.EventKeys.PlayerHitReactableObject, HandleHitReactableObject);
     }
 
     private void OnDisable()
     {
-        Player.PlayerHitReactableObject -= HandleHitReactableObject;
-        Player.PlayerLeaveReactableObject -= HandleLeaveReactableObject;
+        EventManager.Unregister<GameObject>(EventManager.EventKeys.PlayerHitReactableObject, HandleHitReactableObject);
     }
 
-    private void Awake()
+    public void Awake()
     {
         if (instance != null && instance != this)
         {
             Destroy(gameObject);
             return;
         }
-
         instance = this;
         RebuildPrefabLookup();
     }
+    
 
     private void HandleHitReactableObject(GameObject hitObject)
     {
-        Debug.Log("WindowManager received hit object: " + hitObject.name);
-        OpenWindow("ActionPanel", hitObject);
+        var reactable =  hitObject.GetComponent<ReactableObject>();
+        if (reactable != null)
+        {
+            if (reactable.GetShowOperationPanel())
+            {
+                OpenWindow("ActionPanel", hitObject);
+            }
+        }
     }
 
     private void HandleLeaveReactableObject()

@@ -12,8 +12,17 @@ public enum InputHoldingState
 }
 public class Player : MonoBehaviour
 {
-    public static event Action<GameObject> PlayerHitReactableObject;
-    public static event Action PlayerLeaveReactableObject;
+    public static event Action<GameObject> PlayerHitReactableObject
+    {
+        add => EventManager.Register(EventManager.EventKeys.PlayerHitReactableObject, value);
+        remove => EventManager.Unregister(EventManager.EventKeys.PlayerHitReactableObject, value);
+    }
+
+    public static event Action PlayerLeaveReactableObject
+    {
+        add => EventManager.Register(EventManager.EventKeys.PlayerLeaveReactableObject, value);
+        remove => EventManager.Unregister(EventManager.EventKeys.PlayerLeaveReactableObject, value);
+    }
     
     Animator animator;
     Animation rotateAnim;
@@ -213,34 +222,21 @@ public class Player : MonoBehaviour
 
     #region 碰撞处理
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         var enteringArea = other.gameObject.GetComponent<ReactableObject>();
         if (enteringArea != null) //如果是可交互对象
         {
-            PlayerHitReactableObject?.Invoke(enteringArea.gameObject);
+            EventManager.Dispatch(EventManager.EventKeys.PlayerHitReactableObject, enteringArea.gameObject);
         }
     }
-
-    /*private void OnCollisionEnter(Collision other)
-    {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Ground")) {
-            isAtGround = true;
-        }
-    }
-    private void OnCollisionExit(Collision other)
-    {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
-        {
-            isAtGround = false;
-        }
-    }*/
-    private void OnTriggerExit(Collider other)
+    
+    private void OnTriggerExit2D(Collider2D other)
     {
         var enteringArea = other.gameObject.GetComponent<ReactableObject>();
         if (enteringArea != null)
         {
-            PlayerLeaveReactableObject?.Invoke();
+            EventManager.Dispatch(EventManager.EventKeys.PlayerLeaveReactableObject, enteringArea.gameObject);
         }
     }
     

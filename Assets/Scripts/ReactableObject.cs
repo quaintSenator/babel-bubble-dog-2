@@ -1,18 +1,20 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ReactableObject : MonoBehaviour
 {
-    BoxCollider boxCollider;
+    BoxCollider2D boxCollider;
     [SerializeField] public GameObject reactShowingPoint;
+    [SerializeField] public bool showOperationPanel = true;
     
     /// <summary>
     /// 确保可交互区域纵向是无限的
     /// </summary>
     void ReactAreaPrefix()
     {
-        boxCollider = GetComponent<BoxCollider>();
+        boxCollider = GetComponent<BoxCollider2D>();
         
         /*var oriSize = boxCollider.size;
         var oriCenter = boxCollider.center;
@@ -48,9 +50,24 @@ public class ReactableObject : MonoBehaviour
         ReactAreaPrefix();
         reactShowingPoint.SetActive(false);
     }
+    
+    public void OnTriggerEnter2D(Collider2D other)
+    {
+        
+    }
+    
+    public void OnTriggerExit2D(Collider2D other)
+    {
+        
+    }
 
     public virtual void SetOutline(bool isOutline)
     {
        
+    }
+
+    public virtual bool GetShowOperationPanel()
+    {
+        return showOperationPanel;
     }
 }
