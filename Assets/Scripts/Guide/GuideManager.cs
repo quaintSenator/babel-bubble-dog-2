@@ -17,6 +17,8 @@ public class GuideTableItem
     public GuideID GuideId;
     [SerializeField]
     public UnityEngine.Object GuideAsset;
+
+    [SerializeField] public EventKey GuideListenerEventKey;
     
     [SerializeField, HideInInspector]
     private string guideTypeName;
@@ -62,6 +64,7 @@ public class GuideManager : BaseManager
 {
     [SerializeField] List<GuideTableItem> guideTableItems = new List<GuideTableItem>();
     private  static GuideManager instance;
+    public static BaseGuide activeGuide;
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -80,7 +83,12 @@ public class GuideManager : BaseManager
         }
 
         instance = (GuideManager)instance;
-        return instance.CreateGuideInstance(guideId);
+        activeGuide = instance.CreateGuideInstance(guideId);
+        if (activeGuide != null && activeGuide.checkGuide())
+        {
+            activeGuide.StartGuide();
+        }
+        return activeGuide;
     }
 
     private BaseGuide CreateGuideInstance(GuideID guideId)

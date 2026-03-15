@@ -13,17 +13,22 @@ public class FirstEnterSpringGuide : BaseGuide
         return !GuideTriggerManager.everFirstEnterSpring;
     }
 
-    public override void StartGuide()
+    protected void Step1(GameObject go)
     {
-        var springObj = GuideTriggerManager.FindInLevelObjects(LayerMask.NameToLayer("LevelObject"), "Spring");
+        /*var springObj = GuideTriggerManager.FindInLevelObjects(LayerMask.NameToLayer("LevelObject"), "Spring");
         if (springObj != null)
         {
             var reactable = springObj.GetComponent<ReactableObject>();
             if (reactable != null)
             {
                 WindowManager.OpenWindow("GuideWindow", springObj);
-                
             }
-        }
+        }*/
+        Debug.Log("FirstEnterSpringGuide Step1");
+    }
+
+    protected void Step2(GameObject go)
+    {
+        Debug.Log("FirstEnterSpringGuide Step2");
     }
 }

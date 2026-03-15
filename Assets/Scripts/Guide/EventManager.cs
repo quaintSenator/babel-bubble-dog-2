@@ -5,15 +5,17 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
+public enum EventKey
+{
+    PlayerHitReactableObject,
+    PlayerLeaveReactableObject,
+    GuideWindowNextStep,
+}
 public class EventManager : BaseManager
 {
-    public static class EventKeys
-    {
-        public const string PlayerHitReactableObject = "PlayerHitReactableObject";
-        public const string PlayerLeaveReactableObject = "PlayerLeaveReactableObject";
-    }
+   
 
-    private static readonly Dictionary<string, Delegate> EventTable = new Dictionary<string, Delegate>(StringComparer.Ordinal);
+    private static readonly Dictionary<EventKey, Delegate> EventTable = new Dictionary<EventKey, Delegate>();
 
     private static EventManager instance;
 
@@ -27,7 +29,7 @@ public class EventManager : BaseManager
         instance = this;
     }
 
-    public static void Register(string eventKey, Action handler)
+    public static void Register(EventKey eventKey, Action handler)
     {
         if (!ValidateRegister(eventKey, handler))
         {
@@ -49,7 +51,7 @@ public class EventManager : BaseManager
         EventTable[eventKey] = handler;
     }
 
-    public static void Register<T>(string eventKey, Action<T> handler)
+    public static void Register<T>(EventKey eventKey, Action<T> handler)
     {
         if (!ValidateRegister(eventKey, handler))
         {
@@ -71,7 +73,7 @@ public class EventManager : BaseManager
         EventTable[eventKey] = handler;
     }
 
-    public static void Unregister(string eventKey, Action handler)
+    public static void Unregister(EventKey eventKey, Action handler)
     {
         if (!ValidateUnregister(eventKey, handler))
         {
@@ -93,7 +95,7 @@ public class EventManager : BaseManager
         Debug.LogError($"EventManager.Unregister failed: event '{eventKey}' registered with signature {existing.GetType().Name}.");
     }
 
-    public static void Unregister<T>(string eventKey, Action<T> handler)
+    public static void Unregister<T>(EventKey eventKey, Action<T> handler)
     {
         if (!ValidateUnregister(eventKey, handler))
         {
@@ -115,14 +117,8 @@ public class EventManager : BaseManager
         Debug.LogError($"EventManager.Unregister failed: event '{eventKey}' registered with signature {existing.GetType().Name}.");
     }
 
-    public static void Dispatch(string eventKey)
+    public static void Dispatch(EventKey eventKey)
     {
-        if (string.IsNullOrWhiteSpace(eventKey))
-        {
-            Debug.LogError("EventManager.Dispatch failed: eventKey is empty.");
-            return;
-        }
-
         if (!EventTable.TryGetValue(eventKey, out Delegate existing))
         {
             return;
@@ -137,14 +133,8 @@ public class EventManager : BaseManager
         Debug.LogError($"EventManager.Dispatch failed: event '{eventKey}' registered with signature {existing.GetType().Name}.");
     }
 
-    public static void Dispatch<T>(string eventKey, T arg)
+    public static void Dispatch<T>(EventKey eventKey, T arg)
     {
-        if (string.IsNullOrWhiteSpace(eventKey))
-        {
-            Debug.LogError("EventManager.Dispatch failed: eventKey is empty.");
-            return;
-        }
-
         if (!EventTable.TryGetValue(eventKey, out Delegate existing))
         {
             return;
@@ -159,21 +149,15 @@ public class EventManager : BaseManager
         Debug.LogError($"EventManager.Dispatch failed: event '{eventKey}' registered with signature {existing.GetType().Name}.");
     }
 
-    public static void register(string eventKey, Action handler) => Register(eventKey, handler);
-    public static void register<T>(string eventKey, Action<T> handler) => Register(eventKey, handler);
-    public static void unregister(string eventKey, Action handler) => Unregister(eventKey, handler);
-    public static void unregister<T>(string eventKey, Action<T> handler) => Unregister(eventKey, handler);
-    public static void dispatch(string eventKey) => Dispatch(eventKey);
-    public static void dispatch<T>(string eventKey, T arg) => Dispatch(eventKey, arg);
+    public static void register(EventKey eventKey, Action handler) => Register(eventKey, handler);
+    public static void register<T>(EventKey eventKey, Action<T> handler) => Register(eventKey, handler);
+    public static void unregister(EventKey eventKey, Action handler) => Unregister(eventKey, handler);
+    public static void unregister<T>(EventKey eventKey, Action<T> handler) => Unregister(eventKey, handler);
+    public static void dispatch(EventKey eventKey) => Dispatch(eventKey);
+    public static void dispatch<T>(EventKey eventKey, T arg) => Dispatch(eventKey, arg);
 
-    private static bool ValidateRegister(string eventKey, Delegate handler)
+    private static bool ValidateRegister(EventKey eventKey, Delegate handler)
     {
-        if (string.IsNullOrWhiteSpace(eventKey))
-        {
-            Debug.LogError("EventManager.Register failed: eventKey is empty.");
-            return false;
-        }
-
         if (handler == null)
         {
             Debug.LogError("EventManager.Register failed: handler is null.");
@@ -183,14 +167,8 @@ public class EventManager : BaseManager
         return true;
     }
 
-    private static bool ValidateUnregister(string eventKey, Delegate handler)
+    private static bool ValidateUnregister(EventKey eventKey, Delegate handler)
     {
-        if (string.IsNullOrWhiteSpace(eventKey))
-        {
-            Debug.LogError("EventManager.Unregister failed: eventKey is empty.");
-            return false;
-        }
-
         if (handler == null)
         {
             Debug.LogError("EventManager.Unregister failed: handler is null.");
@@ -200,7 +178,7 @@ public class EventManager : BaseManager
         return true;
     }
 
-    private static void UpdateEntry(string eventKey, Delegate updated)
+    private static void UpdateEntry(EventKey eventKey, Delegate updated)
     {
         if (updated == null)
         {

@@ -5,6 +5,7 @@ public class GuideWindow : BaseWindow
 {
     public UITexture guideFrame;
     //GuideWindow的waker是ReactableObject
+    //或者是BaseGuide.
     public override void Open(GameObject wakerObject = null)
     {
         if (wakerObject != null)
@@ -17,6 +18,10 @@ public class GuideWindow : BaseWindow
                 {
                     PrepareGuideFrame(collider);
                 }
+            }
+            else if (true)
+            {
+                
             }
         }
     }
@@ -59,10 +64,17 @@ public class GuideWindow : BaseWindow
         guideFrame.width = Mathf.RoundToInt(width);
         guideFrame.height = Mathf.RoundToInt(height);
         guideFrame.gameObject.SetActive(true);
+        
+        PrepareGuideFrameClick();
     }
 
     void PrepareGuideFrameClick()
     {
-        
+        UIEventListener.Get(guideFrame.gameObject).onClick = OnClickGuideFrame;
+    }
+
+    void OnClickGuideFrame(GameObject go)
+    {
+        EventManager.Dispatch(EventKey.GuideWindowNextStep, go);
     }
 }

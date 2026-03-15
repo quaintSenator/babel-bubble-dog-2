@@ -14,14 +14,14 @@ public class Player : MonoBehaviour
 {
     public static event Action<GameObject> PlayerHitReactableObject
     {
-        add => EventManager.Register(EventManager.EventKeys.PlayerHitReactableObject, value);
-        remove => EventManager.Unregister(EventManager.EventKeys.PlayerHitReactableObject, value);
+        add => EventManager.Register(EventKey.PlayerHitReactableObject, value);
+        remove => EventManager.Unregister(EventKey.PlayerHitReactableObject, value);
     }
 
     public static event Action PlayerLeaveReactableObject
     {
-        add => EventManager.Register(EventManager.EventKeys.PlayerLeaveReactableObject, value);
-        remove => EventManager.Unregister(EventManager.EventKeys.PlayerLeaveReactableObject, value);
+        add => EventManager.Register(EventKey.PlayerLeaveReactableObject, value);
+        remove => EventManager.Unregister(EventKey.PlayerLeaveReactableObject, value);
     }
     
     Animator animator;
@@ -227,7 +227,7 @@ public class Player : MonoBehaviour
         var enteringArea = other.gameObject.GetComponent<ReactableObject>();
         if (enteringArea != null) //如果是可交互对象
         {
-            EventManager.Dispatch(EventManager.EventKeys.PlayerHitReactableObject, enteringArea.gameObject);
+            EventManager.Dispatch(EventKey.PlayerHitReactableObject, enteringArea.gameObject);
         }
     }
     
@@ -236,7 +236,7 @@ public class Player : MonoBehaviour
         var enteringArea = other.gameObject.GetComponent<ReactableObject>();
         if (enteringArea != null)
         {
-            EventManager.Dispatch(EventManager.EventKeys.PlayerLeaveReactableObject, enteringArea.gameObject);
+            EventManager.Dispatch(EventKey.PlayerLeaveReactableObject, enteringArea.gameObject);
         }
     }
     

@@ -13,14 +13,14 @@ public class MatReactableObject : ReactableObject
     
     private void OnEnable()
     {
-        EventManager.Register<GameObject>(EventManager.EventKeys.PlayerHitReactableObject, OnEnterReactableArea);
-        EventManager.Register<GameObject>(EventManager.EventKeys.PlayerLeaveReactableObject, OnLeaveReactableArea);
+        EventManager.Register<GameObject>(EventKey.PlayerHitReactableObject, OnEnterReactableArea);
+        EventManager.Register<GameObject>(EventKey.PlayerLeaveReactableObject, OnLeaveReactableArea);
     }
 
     private void OnDisable()
     {
-        EventManager.Unregister<GameObject>(EventManager.EventKeys.PlayerHitReactableObject, OnEnterReactableArea);
-        EventManager.Unregister<GameObject>(EventManager.EventKeys.PlayerLeaveReactableObject, OnLeaveReactableArea);
+        EventManager.Unregister<GameObject>(EventKey.PlayerHitReactableObject, OnEnterReactableArea);
+        EventManager.Unregister<GameObject>(EventKey.PlayerLeaveReactableObject, OnLeaveReactableArea);
     }
 
     public void OnEnterReactableArea(GameObject hit)

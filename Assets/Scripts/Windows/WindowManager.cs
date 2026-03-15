@@ -43,12 +43,12 @@ public class WindowManager : BaseManager
     
     private void OnEnable()
     {
-        EventManager.Register<GameObject>(EventManager.EventKeys.PlayerHitReactableObject, HandleHitReactableObject);
+        EventManager.Register<GameObject>(EventKey.PlayerHitReactableObject, HandleHitReactableObject);
     }
 
     private void OnDisable()
     {
-        EventManager.Unregister<GameObject>(EventManager.EventKeys.PlayerHitReactableObject, HandleHitReactableObject);
+        EventManager.Unregister<GameObject>(EventKey.PlayerHitReactableObject, HandleHitReactableObject);
     }
 
     public void Awake()

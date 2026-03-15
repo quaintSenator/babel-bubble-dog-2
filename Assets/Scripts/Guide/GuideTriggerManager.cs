@@ -23,12 +23,12 @@ public class GuideTriggerManager : BaseManager
     
     private void OnEnable()
     {
-        EventManager.Register<GameObject>(EventManager.EventKeys.PlayerHitReactableObject, OnEnterReactableArea);
+        EventManager.Register<GameObject>(EventKey.PlayerHitReactableObject, OnEnterReactableArea);
     }
 
     private void OnDisable()
     {
-        EventManager.Unregister<GameObject>(EventManager.EventKeys.PlayerHitReactableObject, OnEnterReactableArea);
+        EventManager.Unregister<GameObject>(EventKey.PlayerHitReactableObject, OnEnterReactableArea);
     }
 
     public void OnEnterReactableArea(GameObject enteringArea)
