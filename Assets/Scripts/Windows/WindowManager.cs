@@ -20,6 +20,7 @@ public class WindowManager : BaseManager
         { "TestWindow", typeof(TestWindow) },
         { "ActionPanel", typeof(ActionOperationPanel) },
         { "GuideWindow", typeof(GuideWindow) },
+        { "BehaviourLearnWindow", typeof(GuideWindow) },
     };
 
     private static readonly Dictionary<string, string> PrefabPathByWindowName = new Dictionary<string, string>(StringComparer.Ordinal)
@@ -27,6 +28,7 @@ public class WindowManager : BaseManager
         { "TestWindow", "Assets/Prefabs/UI/Windows/Test Window.prefab" },
         { "ActionPanel", "Assets/Prefabs/UI/Windows/Action Panel.prefab" },
         { "GuideWindow", "Assets/Prefabs/UI/Windows/Guide Window.prefab" },
+        { "BehaviourLearnWindow", "Assets/Prefabs/UI/Windows/Behaviour Learn Window.prefab" },
     };
 
     private static WindowManager instance;

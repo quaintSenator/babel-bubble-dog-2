@@ -8,27 +8,43 @@ using UnityEditor;
 
 public class FirstEnterSpringGuide : BaseGuide
 {
+    private GuideWindow _window;
     public override bool checkGuide()
     {
         return !GuideTriggerManager.everFirstEnterSpring;
     }
 
-    protected void Step1(GameObject go)
+    public override void RegisterAllEvents()
     {
-        /*var springObj = GuideTriggerManager.FindInLevelObjects(LayerMask.NameToLayer("LevelObject"), "Spring");
+        EventManager.Register<GameObject>(EventKey.GuideWindowNextStep, OnNextStep);
+    }
+
+    public void OnNextStep(GameObject go)
+    {
+        RunNextGuideStep();
+    }
+
+    protected void Step1(GameObject go) //框选Spring
+    {
+        Debug.Log("FirstEnterSpringGuide Step1");
+        var springObj = GuideTriggerManager.FindInLevelObjects(LayerMask.NameToLayer("LevelObject"), "Spring");
         if (springObj != null)
         {
             var reactable = springObj.GetComponent<ReactableObject>();
             if (reactable != null)
             {
-                WindowManager.OpenWindow("GuideWindow", springObj);
+                _window = WindowManager.OpenWindow("GuideWindow", springObj) as GuideWindow;
+                _window.PrepareGuideFrame();
             }
-        }*/
-        Debug.Log("FirstEnterSpringGuide Step1");
+        }
     }
 
     protected void Step2(GameObject go)
     {
+        if (_window != null)
+        {
+            var behLearnWindow = WindowManager.OpenWindow("BehaviourLearnWindow", go);
+        }
         Debug.Log("FirstEnterSpringGuide Step2");
     }
 }

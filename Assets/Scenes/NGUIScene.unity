@@ -131,7 +131,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 72553635}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Mgrs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -146,13 +146,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 72553634}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1112717969}
-  m_Father: {fileID: 0}
+  - {fileID: 2009863964}
+  m_Father: {fileID: 333529001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &333529000
 GameObject:
@@ -190,7 +191,7 @@ Transform:
   - {fileID: 1923018737}
   - {fileID: 2108396139}
   - {fileID: 2119813399}
-  - {fileID: 2009863964}
+  - {fileID: 72553635}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &333529002
@@ -612,6 +613,7 @@ MonoBehaviour:
   guideTableItems:
   - GuideId: 0
     GuideAsset: {fileID: 11500000, guid: 23573804172010d42a83ddf5ec9f7d6a, type: 3}
+    GuideListenerEventKey: 0
     guideTypeName: FirstEnterSpringGuide, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
 --- !u!114 &1112717971
@@ -668,7 +670,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1463082389}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: non_ui
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -684,7 +686,7 @@ Transform:
   m_GameObject: {fileID: 1463082388}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.07, y: 0.07, z: 0.07}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -856,7 +858,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 333529001}
+  m_Father: {fileID: 72553635}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2009863965
 MonoBehaviour:
@@ -1265,6 +1267,5 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 333529001}
-  - {fileID: 72553635}
-  - {fileID: 1463082389}
   - {fileID: 777506412}
+  - {fileID: 1463082389}

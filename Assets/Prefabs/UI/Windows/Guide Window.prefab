@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   guideFrame: {fileID: 6111817278761658694}
+  blackMask: {fileID: 1889709080568046969}
 --- !u!1 &5517333273260649530
 GameObject:
   m_ObjectHideFlags: 0
@@ -56,7 +57,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7421343160574287127}
-  - component: {fileID: 6709841301368773438}
+  - component: {fileID: 1889709080568046969}
   m_Layer: 5
   m_Name: Black Mask
   m_TagString: Untagged
@@ -79,7 +80,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8775745071399340951}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6709841301368773438
+--- !u!114 &1889709080568046969
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -108,13 +109,13 @@ MonoBehaviour:
     relative: 1
     absolute: 0
   updateAnchors: 0
-  mColor: {r: 0.011764706, g: 0.011764706, b: 0.011764706, a: 0.61960787}
+  mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
   mWidth: 1920
   mHeight: 1080
-  mDepth: 0
+  mDepth: 1
   boundless: 0
-  mMat: {fileID: 0}
+  mMat: {fileID: 2100000, guid: 42b3f0fd58aba5442aedb79f8400c08f, type: 2}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0

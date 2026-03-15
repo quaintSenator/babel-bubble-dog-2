@@ -4,13 +4,25 @@ using UnityEngine;
 public class GuideWindow : BaseWindow
 {
     public UITexture guideFrame;
+    public UITexture blackMask;
+    GameObject waker;
+
+    private Material blackHoleMat;
     //GuideWindow的waker是ReactableObject
-    //或者是BaseGuide.
     public override void Open(GameObject wakerObject = null)
     {
-        if (wakerObject != null)
+        waker = wakerObject;
+        if (blackMask != null)
         {
-            var reactableObj = wakerObject.GetComponent<ReactableObject>();
+            blackHoleMat = blackMask.material;
+        }
+    }
+
+    public void PrepareGuideFrame()
+    {
+        if (waker != null)
+        {
+            var reactableObj = waker.GetComponent<ReactableObject>();
             if (reactableObj != null)
             {
                 var collider = reactableObj.GetComponent<BoxCollider2D>();
@@ -25,8 +37,7 @@ public class GuideWindow : BaseWindow
             }
         }
     }
-
-    void PrepareGuideFrame(BoxCollider2D col)
+    public void PrepareGuideFrame(Bounds bounds)
     {
         var worldCamera = Camera.main;
         var uiCamera = UICamera.mainCamera;
@@ -36,7 +47,6 @@ public class GuideWindow : BaseWindow
         }
 
         // Use world-space bounds to account for scale, offset, and parent transforms
-        var bounds = col.bounds;
         var worldMin = bounds.min;
         var worldMax = bounds.max;
 
@@ -65,7 +75,49 @@ public class GuideWindow : BaseWindow
         guideFrame.height = Mathf.RoundToInt(height);
         guideFrame.gameObject.SetActive(true);
         
+        if (blackHoleMat != null && blackMask != null)
+        {
+            var maskCorners = blackMask.localCorners;
+            var maskSize = maskCorners[2] - maskCorners[0];
+            if (maskSize.x > 0.0001f && maskSize.y > 0.0001f)
+            {
+                var worldMinLocal = parent.TransformPoint(localMin);
+                var worldMaxLocal = parent.TransformPoint(localMax);
+                var maskLocalMin = blackMask.transform.InverseTransformPoint(worldMinLocal);
+                var maskLocalMax = blackMask.transform.InverseTransformPoint(worldMaxLocal);
+
+                var maskLocalCenter = (maskLocalMin + maskLocalMax) * 0.5f;
+                var maskLocalWidth = Mathf.Abs(maskLocalMax.x - maskLocalMin.x);
+                var maskLocalHeight = Mathf.Abs(maskLocalMax.y - maskLocalMin.y);
+
+                var rectCenterUV = new Vector2(
+                    (maskLocalCenter.x - maskCorners[0].x) / maskSize.x,
+                    (maskLocalCenter.y - maskCorners[0].y) / maskSize.y
+                );
+                var rectSizeUV = new Vector2(
+                    maskLocalWidth / maskSize.x,
+                    maskLocalHeight / maskSize.y
+                );
+
+                rectCenterUV.x = Mathf.Clamp01(rectCenterUV.x);
+                rectCenterUV.y = Mathf.Clamp01(rectCenterUV.y);
+                rectSizeUV.x = Mathf.Clamp01(rectSizeUV.x);
+                rectSizeUV.y = Mathf.Clamp01(rectSizeUV.y);
+
+                blackHoleMat.SetVector("_RectCenter", new Vector4(rectCenterUV.x, rectCenterUV.y, 0f, 0f));
+                blackHoleMat.SetVector("_RectSize", new Vector4(rectSizeUV.x, rectSizeUV.y, 0f, 0f));
+            }
+        }
+        
         PrepareGuideFrameClick();
+    }
+    public void PrepareGuideFrame(BoxCollider2D col)
+    {
+        PrepareGuideFrame(col.bounds);
+    }
+    public void PrepareGuideFrame(BoxCollider col)
+    {
+        PrepareGuideFrame(col.bounds);
     }
 
     void PrepareGuideFrameClick()

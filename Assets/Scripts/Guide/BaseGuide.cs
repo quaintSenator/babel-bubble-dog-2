@@ -24,7 +24,13 @@ public class BaseGuide
 
     public virtual void StartGuide()
     {
+        RegisterAllEvents();
         StartGuideSteps();
+    }
+
+    public virtual void RegisterAllEvents()
+    {
+        
     }
 
     protected void StartGuideSteps(GameObject context = null)
