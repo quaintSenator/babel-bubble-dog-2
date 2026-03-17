@@ -1,7 +1,15 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.U2D.Animation;
 
+[Serializable]
+public class DragBoneConfig
+{
+    [SerializeField] public Transform bone;
+    [SerializeField] public float centerZRot;
+    [SerializeField] public Vector2 zRotRange = new Vector2(-160, 160);
+}
 public class DragableDog : MonoBehaviour
 {
     [SerializeField] Camera targetCamera;
@@ -10,6 +18,7 @@ public class DragableDog : MonoBehaviour
     [SerializeField] bool applyRotation = true;
     [SerializeField] Transform RootBone;
     [SerializeField] List<Transform> UnDragableNodes = new List<Transform>();
+    [SerializeField] List<DragBoneConfig> BoneConfigs = new List<DragBoneConfig>();
 
     SpriteRenderer[] spriteRenderers = new SpriteRenderer[0];
     Collider2D[] colliders = new Collider2D[0];
@@ -151,7 +160,32 @@ public class DragableDog : MonoBehaviour
             if (currentVec.sqrMagnitude >= 0.0001f)
             {
                 var angle = Vector2.SignedAngle(dragStartBoneToMouseWorld, currentVec);
-                activeBone.rotation = dragStartBoneWorldRot * Quaternion.AngleAxis(angle, Vector3.forward);
+                var tmpRot = dragStartBoneWorldRot * Quaternion.AngleAxis(angle, Vector3.forward);
+                Transform mBone = null;
+                float l = 0, r = 0, c = 0;
+                foreach (var conf in BoneConfigs)
+                {
+                    if (activeBone.name == conf.bone.name)
+                    {
+                        mBone = conf.bone;
+                        l = conf.zRotRange.x;
+                        r = conf.zRotRange.y;
+                        c = conf.centerZRot;
+                        break;
+                    }
+                }
+
+                if (mBone != null)
+                {
+                    if (DisplayUtils.IsInZRange(tmpRot.eulerAngles.z, c, l, r))
+                    {
+                        activeBone.rotation = tmpRot;
+                    }
+                }
+                else
+                {
+                    activeBone.rotation = tmpRot;
+                }
             }
         }
     }

@@ -24,4 +24,15 @@ public static class DisplayUtils
         Vector3 screenPos = cam.WorldToScreenPoint(from.position);
         return new Vector2(screenPos.x, screenPos.y);
     }
+    public static bool IsInZRange(float i, float c, float l, float r)
+    {
+        float left = Mathf.Repeat(c + l, 360f);
+        float right = Mathf.Repeat(c + r, 360f);
+        float angle = Mathf.Repeat(i, 360f);
+
+        if (left <= right)
+            return angle >= left && angle <= right;   // 不跨 0
+        else
+            return angle >= left || angle <= right;   // 跨 0
+    }
 }
