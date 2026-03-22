@@ -43,6 +43,18 @@ public class ActionOperationPanel : BaseWindow
     
     public override void Open(GameObject wakerObject = null)
     {
+        var player = FindObjectOfType<Player>();
+        if (player != null && player.reactShowPoint != null)
+        {
+            transform.position = player.reactShowPoint.transform.position;
+            return;
+        }
+
+        if (wakerObject == null)
+        {
+            return;
+        }
+
         var area = wakerObject.GetComponent<ReactableObject>();
         if (area != null)
         {

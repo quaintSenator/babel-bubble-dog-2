@@ -28,6 +28,8 @@ public class Player : MonoBehaviour
     Animation rotateAnim;
     [SerializeField] private float speed = 5f;
     [SerializeField] private float jumpMaxHeight = 2f;
+    [SerializeField] private bool enableCameraFollow = true;
+    [SerializeField] public GameObject reactShowPoint;
     InputHoldingState holdingState;
     InputHoldingState curHoldingState;
     [SerializeField]  public SpriteRenderer rootSprite;
@@ -39,6 +41,10 @@ public class Player : MonoBehaviour
     private bool isGrounded = false;
     private bool lockMovement = false;
     private bool lockYMovement = false;
+    private Camera followCamera;
+    private Vector3 cameraOffset;
+    private float groundedCameraY;
+    private bool cameraFollowInitialized = false;
     
     public Transform RootBone;
     private const int LeftIdelDogEndRotateY = 0;
@@ -52,6 +58,7 @@ public class Player : MonoBehaviour
         holdingState = InputHoldingState.Idle;
         rotateAnim = GetComponent<Animation>();
         myCollider = GetComponent<Collider2D>();
+        InitCameraFollow();
     }
 
     // Update is called once per frame
@@ -63,6 +70,11 @@ public class Player : MonoBehaviour
         TickPositionY();
         //TickAnimStateRotate(); 搁置 翻转没找到很好的办法 bug解决不了
         holdingState = curHoldingState;
+    }
+
+    void LateUpdate()
+    {
+        TickCameraFollow();
     }
 
     private void TickPlayerInput()
@@ -223,6 +235,57 @@ public class Player : MonoBehaviour
     {
         animator.SetBool("moving", false);
         moving = false;
+    }
+
+    private void InitCameraFollow()
+    {
+        if (!enableCameraFollow)
+        {
+            return;
+        }
+
+        if (followCamera == null)
+        {
+            followCamera = Camera.main;
+        }
+
+        if (followCamera == null)
+        {
+            return;
+        }
+
+        cameraOffset = followCamera.transform.position - transform.position;
+        groundedCameraY = followCamera.transform.position.y;
+        cameraFollowInitialized = true;
+    }
+
+    private void TickCameraFollow()
+    {
+        if (!enableCameraFollow)
+        {
+            return;
+        }
+
+        if (!cameraFollowInitialized || followCamera == null)
+        {
+            InitCameraFollow();
+            if (!cameraFollowInitialized || followCamera == null)
+            {
+                return;
+            }
+        }
+
+        var cameraPos = followCamera.transform.position;
+        cameraPos.x = transform.position.x + cameraOffset.x;
+
+        if (isAtGround)
+        {
+            groundedCameraY = transform.position.y + cameraOffset.y;
+        }
+
+        cameraPos.y = groundedCameraY;
+        cameraPos.z = transform.position.z + cameraOffset.z;
+        followCamera.transform.position = cameraPos;
     }
 
     #region 碰撞处理

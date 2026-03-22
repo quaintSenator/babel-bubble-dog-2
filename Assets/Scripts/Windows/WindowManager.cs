@@ -46,11 +46,13 @@ public class WindowManager : BaseManager
     private void OnEnable()
     {
         EventManager.Register<GameObject>(EventKey.PlayerHitReactableObject, HandleHitReactableObject);
+        EventManager.Register<GameObject>(EventKey.PlayerLeaveReactableObject, HandleLeaveReactableObject);
     }
 
     private void OnDisable()
     {
         EventManager.Unregister<GameObject>(EventKey.PlayerHitReactableObject, HandleHitReactableObject);
+        EventManager.Unregister<GameObject>(EventKey.PlayerLeaveReactableObject, HandleLeaveReactableObject);
     }
 
     public void Awake()
@@ -77,7 +79,7 @@ public class WindowManager : BaseManager
         }
     }
 
-    private void HandleLeaveReactableObject()
+    private void HandleLeaveReactableObject(GameObject leaveObject)
     {
         CloseWindow("ActionPanel");
     }
@@ -177,6 +179,10 @@ public class WindowManager : BaseManager
         if (openedType2WindowClsDict.TryGetValue(windowType, out MonoBehaviour cachedWindow) && cachedWindow != null)
         {
             cachedWindow.gameObject.SetActive(true);
+            if (cachedWindow is BaseWindow cachedBaseWindow)
+            {
+                cachedBaseWindow.Open(wakerObject);
+            }
             EnqueueWindow(cachedWindow);
             return cachedWindow;
         }
