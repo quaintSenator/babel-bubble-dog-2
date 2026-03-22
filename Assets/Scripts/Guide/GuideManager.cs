@@ -86,6 +86,7 @@ public class GuideManager : BaseManager
         activeGuide = instance.CreateGuideInstance(guideId);
         if (activeGuide != null && activeGuide.checkGuide())
         {
+            activeGuide.BeforeGuide();
             activeGuide.StartGuide();
         }
         return activeGuide;

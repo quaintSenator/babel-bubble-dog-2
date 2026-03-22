@@ -14,6 +14,7 @@ public class BaseGuide
     private readonly List<Action<GameObject>> guideSteps = new List<Action<GameObject>>();
     private bool stepsInitialized;
     private int currentStepIndex = -1;
+    protected GuideWindow _guideWindow;
 
     protected List<Action<GameObject>> GuideSteps => guideSteps;
     
@@ -122,5 +123,38 @@ public class BaseGuide
                 //RunNextGuideStep(context); //不要自动下一步
             });
         }
+    }
+
+    public void CommonStepClickThing(GameObject go, string thing)
+    {
+        var springObj = GuideTriggerManager.FindInLevelObjects(LayerMask.NameToLayer("LevelObject"), thing);
+        if (springObj != null)
+        {
+            var reactable = springObj.GetComponent<ReactableObject>();
+            if (reactable != null)
+            {
+                EventManager.dispatch(EventKey.PlayerShouldFreeze);
+               
+                _guideWindow.PrepareGuideFrame();
+            }
+        }
+    }
+
+    public void CommonStepWalkToThing(GameObject go, string thing)
+    {
+        var targetThing = GuideTriggerManager.FindInLevelObjects(LayerMask.NameToLayer("LevelObject"), thing);
+        if (targetThing != null)
+        {
+            var reactable = targetThing.GetComponent<ReactableObject>();
+            if (reactable != null)
+            {
+                _guideWindow.PrepareGuideWalkTo(reactable.gameObject);
+            }
+        }
+    }
+
+    public void BeforeGuide()
+    {
+        _guideWindow = WindowManager.OpenWindow("GuideWindow") as GuideWindow;
     }
 }

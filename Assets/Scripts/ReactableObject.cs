@@ -53,12 +53,12 @@ public class ReactableObject : MonoBehaviour
     
     public void OnTriggerEnter2D(Collider2D other)
     {
-        
+
     }
     
     public void OnTriggerExit2D(Collider2D other)
     {
-        
+
     }
 
     public virtual void SetOutline(bool isOutline)

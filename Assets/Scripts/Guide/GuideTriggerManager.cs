@@ -33,7 +33,7 @@ public class GuideTriggerManager : BaseManager
 
     public void OnEnterReactableArea(GameObject enteringArea)
     {
-        GuideManager.StartGuide(GuideID.FirstTimeEnteringSpring);
+        
     }
     public static GameObject FindInLevelObjects(LayerMask mask, string name)
     {

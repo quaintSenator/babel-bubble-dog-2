@@ -14,7 +14,8 @@ public class Main : MonoBehaviour
         keyDownTestObject.name = "KeyDownTest Object";
         keyDownTestObject.AddComponent<KeyDownTest>();
         DontDestroyOnLoad(keyDownTestObject);
-        #endif
+        GuideManager.StartGuide(GuideID.FirstTimeEnteringSpring);
+#endif
     }
 
     private void Update()

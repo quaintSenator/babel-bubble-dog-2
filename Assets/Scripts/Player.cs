@@ -37,7 +37,9 @@ public class Player : MonoBehaviour
     private float verticalVelocity = 0f;
     private const float JumpGravity = 20f;
     private bool isGrounded = false;
-
+    private bool lockMovement = false;
+    private bool lockYMovement = false;
+    
     public Transform RootBone;
     private const int LeftIdelDogEndRotateY = 0;
     private const int RightIdelDogEndRotateY = 180;
@@ -112,7 +114,7 @@ public class Player : MonoBehaviour
 
     private void TickPositionX()
     {
-        if (moving)
+        if (moving && !lockMovement)
         {
             curXMovement = 0;
             animator.SetBool("moving", true);
@@ -142,6 +144,10 @@ public class Player : MonoBehaviour
 
     void TickPositionY()
     {
+        if (lockYMovement)
+        {
+            return;
+        }
         var msk = LayerMask.GetMask("Ground");
 
         Vector2 center = myCollider.bounds.center;
@@ -150,7 +156,6 @@ public class Player : MonoBehaviour
 
         Collider2D hit = Physics2D.OverlapBox(center, size, angle, msk);
         isAtGround = hit != null && hit != myCollider;
-        
         
         if (holdingJump && isAtGround)
         {
@@ -239,12 +244,30 @@ public class Player : MonoBehaviour
             EventManager.Dispatch(EventKey.PlayerLeaveReactableObject, enteringArea.gameObject);
         }
     }
-    
-  
-
     #endregion
 
+    #region 移动处理
 
-    
-    
+    public void SetLockMove(bool lockMove)
+    {
+        lockMovement = lockMove;
+    }
+
+    public bool GetLockMove()
+    {
+        return lockMovement;
+    }
+
+    public void SetLockYMove(bool lockYMove)
+    {
+        lockYMovement = lockYMove;
+    }
+
+    public void FreezePlayer(bool isFreeze)
+    {
+        SetLockMove(!isFreeze);
+        SetLockYMove(!isFreeze);
+    }
+
+    #endregion
 }

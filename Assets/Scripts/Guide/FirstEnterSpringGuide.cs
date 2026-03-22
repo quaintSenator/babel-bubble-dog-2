@@ -8,7 +8,7 @@ using UnityEditor;
 
 public class FirstEnterSpringGuide : BaseGuide
 {
-    private GuideWindow _window;
+
     public override bool checkGuide()
     {
         return !GuideTriggerManager.everFirstEnterSpring;
@@ -24,24 +24,19 @@ public class FirstEnterSpringGuide : BaseGuide
         RunNextGuideStep();
     }
 
-    protected void Step1(GameObject go) //框选Spring
+    protected void Step1(GameObject go)//显示左右移动icon
     {
-        Debug.Log("FirstEnterSpringGuide Step1");
-        var springObj = GuideTriggerManager.FindInLevelObjects(LayerMask.NameToLayer("LevelObject"), "Spring");
-        if (springObj != null)
-        {
-            var reactable = springObj.GetComponent<ReactableObject>();
-            if (reactable != null)
-            {
-                _window = WindowManager.OpenWindow("GuideWindow", springObj) as GuideWindow;
-                _window.PrepareGuideFrame();
-            }
-        }
+        CommonStepWalkToThing(go, "Bush");
     }
-
+    
     protected void Step2(GameObject go)
     {
-        if (_window != null)
+       Debug.Log("sfsfsf");
+    }
+
+    protected void Step3(GameObject go)
+    {
+        if (_guideWindow != null)
         {
             var behLearnWindow = WindowManager.OpenWindow("BehaviourLearnWindow", go);
         }

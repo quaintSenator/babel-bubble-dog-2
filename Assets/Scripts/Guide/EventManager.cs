@@ -10,6 +10,8 @@ public enum EventKey
     PlayerHitReactableObject,
     PlayerLeaveReactableObject,
     GuideWindowNextStep,
+    PlayerShouldFreeze,
+    PlayerShouldFree,
 }
 public class EventManager : BaseManager
 {

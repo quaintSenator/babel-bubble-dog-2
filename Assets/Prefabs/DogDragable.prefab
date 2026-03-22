@@ -18,15 +18,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6403878834178386446, guid: f8218d348da2a5b48a962640868ce460, type: 3}
       propertyPath: m_LocalScale.x
-      value: 40
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 6403878834178386446, guid: f8218d348da2a5b48a962640868ce460, type: 3}
       propertyPath: m_LocalScale.y
-      value: 40
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 6403878834178386446, guid: f8218d348da2a5b48a962640868ce460, type: 3}
       propertyPath: m_LocalScale.z
-      value: 40
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 6403878834178386446, guid: f8218d348da2a5b48a962640868ce460, type: 3}
       propertyPath: m_LocalPosition.x
@@ -110,10 +110,10 @@ MonoBehaviour:
   BoneConfigs:
   - bone: {fileID: 1117685951999072345}
     centerZRot: 2.0513418
-    zRotRange: {x: 0, y: 0}
+    zRotRange: {x: -10, y: 10}
   - bone: {fileID: 4236784865701981950}
     centerZRot: 266.49283
-    zRotRange: {x: 0, y: 0}
+    zRotRange: {x: -160, y: 160}
 --- !u!4 &1117685951999072345 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8458554338499146168, guid: f8218d348da2a5b48a962640868ce460, type: 3}

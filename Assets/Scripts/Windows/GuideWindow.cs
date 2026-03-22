@@ -5,10 +5,15 @@ public class GuideWindow : BaseWindow
 {
     public UITexture guideFrame;
     public UITexture blackMask;
+    public GameObject playerEnterTarget;
+    public MoveNoticeFingerNode moveNoticeFingerNode;
     GameObject waker;
+    private Transform playerTransform;
+    private bool isWalkGuideActive;
+    private bool isListeningPlayerHit;
 
     private Material blackHoleMat;
-    //GuideWindow的waker是ReactableObject
+
     public override void Open(GameObject wakerObject = null)
     {
         waker = wakerObject;
@@ -16,6 +21,13 @@ public class GuideWindow : BaseWindow
         {
             blackHoleMat = blackMask.material;
         }
+
+        StopWalkGuideOnly();
+    }
+
+    private void OnDisable()
+    {
+        StopWalkGuideOnly();
     }
 
     public void PrepareGuideFrame()
@@ -125,8 +137,144 @@ public class GuideWindow : BaseWindow
         UIEventListener.Get(guideFrame.gameObject).onClick = OnClickGuideFrame;
     }
 
+    public void PrepareGuideWalkTo(GameObject go)
+    {
+        if (go == null)
+        {
+            return;
+        }
+
+        PrepareGuidePlayerEnterTargetPoint(go);
+        isWalkGuideActive = true;
+        if (moveNoticeFingerNode != null)
+        {
+            moveNoticeFingerNode.gameObject.SetActive(true);
+        }
+        TryFindPlayerTransform();
+        RefreshMoveFingerDirection();
+    }
+
+    private void Update()
+    {
+        if (!isWalkGuideActive || playerEnterTarget == null)
+        {
+            return;
+        }
+
+        if (IsPlayerAtTarget(playerEnterTarget))
+        {
+            CompleteWalkGuide(playerEnterTarget);
+            return;
+        }
+
+        RefreshMoveFingerDirection();
+    }
+
+    void PrepareGuidePlayerEnterTargetPoint(GameObject target)
+    {
+        if (target == null)
+        {
+            return;
+        }
+
+        playerEnterTarget = target;
+        if (isListeningPlayerHit)
+        {
+            return;
+        }
+
+        EventManager.Register<GameObject>(EventKey.PlayerHitReactableObject, OnPlayerHitPlayerObject);
+        isListeningPlayerHit = true;
+    }
+
+    void OnPlayerHitPlayerObject(GameObject hitObj)
+    {
+        if (playerEnterTarget == hitObj)
+        {
+            CompleteWalkGuide(hitObj);
+        }
+    }
+
     void OnClickGuideFrame(GameObject go)
     {
         EventManager.Dispatch(EventKey.GuideWindowNextStep, go);
+    }
+
+    private void CompleteWalkGuide(GameObject reachedTarget)
+    {
+        StopWalkGuideOnly();
+        EventManager.Dispatch(EventKey.GuideWindowNextStep, reachedTarget);
+    }
+
+    private void StopWalkGuideOnly()
+    {
+        isWalkGuideActive = false;
+        playerEnterTarget = null;
+
+        if (moveNoticeFingerNode != null)
+        {
+            moveNoticeFingerNode.gameObject.SetActive(false);
+        }
+
+        if (isListeningPlayerHit)
+        {
+            EventManager.Unregister<GameObject>(EventKey.PlayerHitReactableObject, OnPlayerHitPlayerObject);
+            isListeningPlayerHit = false;
+        }
+    }
+
+    private void TryFindPlayerTransform()
+    {
+        if (playerTransform != null)
+        {
+            return;
+        }
+
+        var player = FindObjectOfType<Player>();
+        if (player != null)
+        {
+            playerTransform = player.transform;
+        }
+    }
+
+    private void RefreshMoveFingerDirection()
+    {
+        if (!isWalkGuideActive || moveNoticeFingerNode == null || playerEnterTarget == null)
+        {
+            return;
+        }
+
+        TryFindPlayerTransform();
+        if (playerTransform == null)
+        {
+            return;
+        }
+
+        var isPlayerAtLeftOfTarget = playerTransform.position.x < playerEnterTarget.transform.position.x;
+        moveNoticeFingerNode.SetPointAt(!isPlayerAtLeftOfTarget);
+    }
+
+    private bool IsPlayerAtTarget(GameObject target)
+    {
+        if (target == null)
+        {
+            return false;
+        }
+
+        TryFindPlayerTransform();
+        if (playerTransform == null)
+        {
+            return false;
+        }
+
+        var playerCollider = playerTransform.GetComponent<Collider2D>();
+        var targetCollider = target.GetComponent<Collider2D>();
+
+        if (playerCollider != null && targetCollider != null)
+        {
+            return playerCollider.bounds.Intersects(targetCollider.bounds);
+        }
+
+        return Mathf.Abs(playerTransform.position.x - target.transform.position.x) <= 0.05f;
     }
 }
